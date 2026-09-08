@@ -1,13 +1,13 @@
 # Handwritten Digit Recognition with PyTorch
 
 A beginner-friendly Jupyter notebook that trains a neural network to recognise handwritten
-digits (0-9) using the [MNIST dataset](http://yann.lecun.com/exdb/mnist/) and
+digits (0-9) using the [MNIST dataset](https://systemds.apache.org/datasets/mnist) and
 [PyTorch](https://pytorch.org/). It's written as a self-contained **learning exercise**, not
 just a script to run, and includes a drawing canvas so you can test (and even correct) the
 model on your own handwriting.
 
 This is the PyTorch counterpart to
-[handwritten_digit_recognition](https://github.com/tjsuk/handwritten_digit_recognition), a
+[HandwrittenTensorflow](https://github.com/tjsuk/HandwrittenTensorflow), a
 separate project solving the same problem with TensorFlow/Keras. The two aren't required
 reading for each other, but the notebook does call out how PyTorch's approach differs from
 Keras' as those differences come up, and finishes with a side-by-side comparison table — so if
@@ -28,9 +28,19 @@ you're comparing the two frameworks, they're a good pair to read together.
 11. **Draw your own digit** — the same interactive canvas as the TensorFlow notebook, with live prediction, correctness feedback, and manual online-learning "teach the model" steps
 12. **Save the trained model** — with an explanation of what a `state_dict` actually is, and how that differs fundamentally from a Keras `.keras` file
 
-It finishes with a **Summary** (including a Keras vs PyTorch comparison table) and a **Bonus**
-section on Convolutional Neural Networks — exactly which cells you'd change to use one, and a
-runnable CNN cell to compare its accuracy directly against the original model.
+It finishes with a **Summary** (including a Keras vs PyTorch comparison table), followed by two
+bonus sections:
+
+- **Watch backpropagation happen** — Step 7 already calls `loss.backward()` explicitly, so this
+  section instead makes the otherwise-invisible *gradient tensors* it produces visible. A minimal
+  one-weight toy example computes a gradient with autograd and checks it against a hand-worked
+  calculus derivative (they match exactly), then the same technique is applied to the real trained
+  model — inspecting actual gradient values on a real batch (`.grad` is `None` before `backward()`,
+  populated after), and applying one genuine optimizer step to watch a specific weight change by a
+  real, measurable amount (its original weights are restored immediately afterwards, so the demo
+  has no side effects on the rest of the notebook).
+- **Try a CNN yourself** — exactly which cells you'd change to use a Convolutional Neural Network
+  instead, and a runnable CNN cell to compare its accuracy directly against the original model.
 
 ## Requirements
 
@@ -131,10 +141,75 @@ down the output's left edge to toggle it between boxed and full-height.
 
 ## Ideas to extend
 
-- Train for more epochs, or try a different optimizer (e.g. `torch.optim.SGD`) or learning rate
-- Try the Convolutional Neural Network in the Bonus section, and compare its accuracy and training
-  time against the original model
-- Test the model against unusual or messy handwriting on the drawing canvas, and use the "teach
-  the model" feature to correct it live
-- Compare this notebook side-by-side with the TensorFlow version to see the same ideas expressed
-  two different ways
+### Train for more epochs, or try a different optimizer or learning rate
+
+In the Step 7 code cell, change `EPOCHS = 5` to a higher number, e.g. `EPOCHS = 15`. Since Step 5
+already built `model` and Step 6 already created `optimizer`, just re-run the Step 7 cell directly
+— it'll keep training the *same* model for the extra epochs. If you'd rather train a fresh model
+from scratch for a fair comparison, re-run Step 5 (rebuilds `model` with new random weights) and
+Step 6 (recreates `optimizer` to match) first.
+
+To try a different optimizer, edit the Step 6 cell:
+
+```python
+optimizer = torch.optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
+```
+
+Plain SGD generally needs a higher learning rate and some `momentum` to train at a comparable
+speed to Adam — the values above are a reasonable starting point. Since this replaces `optimizer`
+entirely, re-run Step 5 first to reset `model` to its untrained state, then Step 6, then Step 7,
+so you're comparing a fair, freshly-trained run.
+
+### Try the Convolutional Neural Network in the Bonus section
+
+No setup needed — scroll to the **Bonus: Try a CNN yourself** section at the end of the notebook
+and run its cell directly. It builds, trains, and evaluates a small CNN independently (using
+`cnn_model` rather than `model`), and prints its test accuracy directly next to the original
+model's from Step 8, so you can compare them immediately.
+
+If you'd rather make the CNN the notebook's *main* model instead of a separate comparison, only
+**Step 5** actually needs to change — replace its `HandwrittenDigitClassifier` class with the
+`CNNClassifier` class shown in the Bonus section. Every other step (2 and 6 through 12) works
+unchanged, since they only ever call `model(images)` without caring what's inside it — a nice
+contrast with the TensorFlow notebook, which also needs its data-loading step changed for its CNN
+bonus. The Bonus section's "Where in the code above you'd need to change things" part explains why.
+
+### Test the model against unusual or messy handwriting
+
+Run the Step 11a and 11b cells, then in Step 11's canvas:
+1. Draw a digit in an unusual style — very thin, off-centre, rotated, or an unconventional way of
+   forming a digit (e.g. a 7 with a crossbar, a closed-top 4)
+2. Click **Predict** and see what the model guesses, and how confident it is
+3. Click **No, wrong** if it got it wrong, pick the actual digit from the dropdown, and click
+   **Teach the model**
+4. Draw the same digit again and click **Predict** — it should now be more likely to get it right
+
+If you correct the model on many examples and want to reset it back to its originally-trained
+state, re-run Step 5 (rebuilds `model` from scratch), Step 6 (recreates `optimizer` to match),
+and Step 7 (retrains on the full MNIST training set) — this discards any canvas-based corrections.
+
+### Explore the backpropagation bonus section further
+
+In the **Bonus: Watch backpropagation happen** section, find the cell containing
+`first_layer_gradients[:5, 400]` and change `400` to a different pixel index between 0 and 783
+(remember pixels are the *second* index of this weight tensor — see the note in that cell). Re-run
+that cell (and the following one, which also references `400` when picking which weight to
+update) and see how the gradient values and the resulting weight change differ:
+- Indices near the image's edges/corners (e.g. `0`, `27`, `755`) tend to give gradients of exactly
+  `0`, since MNIST digits rarely or never touch those pixels
+- Indices nearer the centre (e.g. `350`-`450`) tend to give the largest, most varied gradients,
+  since that's where digit strokes usually pass through
+
+### Compare this notebook side-by-side with the TensorFlow version
+
+Open both notebooks in separate tabs and step through them in parallel, section by section. A few
+concrete things worth comparing directly:
+- Run `model.summary()` (TensorFlow, Step 5) next to `print(model)` plus the parameter count
+  (PyTorch, Step 5) — both report 101,770 parameters for the identical architecture, just formatted
+  very differently
+- Compare Step 6 in each: one `model.compile(...)` call vs. two separate `criterion`/`optimizer`
+  objects, configuring the same underlying ideas
+- Draw the *same* digit on both notebooks' canvases (Step 11 in each) and compare the predicted
+  digit and confidence percentage each model gives it
+- Read the "How this compares to Keras, at a glance" table in this notebook's Summary section for
+  a full concept-by-concept mapping between the two
