@@ -141,75 +141,15 @@ down the output's left edge to toggle it between boxed and full-height.
 
 ## Ideas to extend
 
-### Train for more epochs, or try a different optimizer or learning rate
+- Train for more epochs, or try a different optimizer (e.g. plain SGD with momentum) or learning
+  rate
+- Try the Convolutional Neural Network in the Bonus section, or make it the notebook's main model
+  instead — only Step 5 needs to change
+- Test the model against unusual or messy handwriting using the drawing canvas's "teach the
+  model" feature
+- Explore the backpropagation bonus section further by inspecting gradients at different pixel
+  indices, or across the whole image at once
+- Compare this notebook side-by-side with the companion TensorFlow version
 
-In the Step 7 code cell, change `EPOCHS = 5` to a higher number, e.g. `EPOCHS = 15`. Since Step 5
-already built `model` and Step 6 already created `optimizer`, just re-run the Step 7 cell directly
-— it'll keep training the *same* model for the extra epochs. If you'd rather train a fresh model
-from scratch for a fair comparison, re-run Step 5 (rebuilds `model` with new random weights) and
-Step 6 (recreates `optimizer` to match) first.
-
-To try a different optimizer, edit the Step 6 cell:
-
-```python
-optimizer = torch.optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
-```
-
-Plain SGD generally needs a higher learning rate and some `momentum` to train at a comparable
-speed to Adam — the values above are a reasonable starting point. Since this replaces `optimizer`
-entirely, re-run Step 5 first to reset `model` to its untrained state, then Step 6, then Step 7,
-so you're comparing a fair, freshly-trained run.
-
-### Try the Convolutional Neural Network in the Bonus section
-
-No setup needed — scroll to the **Bonus: Try a CNN yourself** section at the end of the notebook
-and run its cell directly. It builds, trains, and evaluates a small CNN independently (using
-`cnn_model` rather than `model`), and prints its test accuracy directly next to the original
-model's from Step 8, so you can compare them immediately.
-
-If you'd rather make the CNN the notebook's *main* model instead of a separate comparison, only
-**Step 5** actually needs to change — replace its `HandwrittenDigitClassifier` class with the
-`CNNClassifier` class shown in the Bonus section. Every other step (2 and 6 through 12) works
-unchanged, since they only ever call `model(images)` without caring what's inside it — a nice
-contrast with the TensorFlow notebook, which also needs its data-loading step changed for its CNN
-bonus. The Bonus section's "Where in the code above you'd need to change things" part explains why.
-
-### Test the model against unusual or messy handwriting
-
-Run the Step 11a and 11b cells, then in Step 11's canvas:
-1. Draw a digit in an unusual style — very thin, off-centre, rotated, or an unconventional way of
-   forming a digit (e.g. a 7 with a crossbar, a closed-top 4)
-2. Click **Predict** and see what the model guesses, and how confident it is
-3. Click **No, wrong** if it got it wrong, pick the actual digit from the dropdown, and click
-   **Teach the model**
-4. Draw the same digit again and click **Predict** — it should now be more likely to get it right
-
-If you correct the model on many examples and want to reset it back to its originally-trained
-state, re-run Step 5 (rebuilds `model` from scratch), Step 6 (recreates `optimizer` to match),
-and Step 7 (retrains on the full MNIST training set) — this discards any canvas-based corrections.
-
-### Explore the backpropagation bonus section further
-
-In the **Bonus: Watch backpropagation happen** section, find the cell containing
-`first_layer_gradients[:5, 400]` and change `400` to a different pixel index between 0 and 783
-(remember pixels are the *second* index of this weight tensor — see the note in that cell). Re-run
-that cell (and the following one, which also references `400` when picking which weight to
-update) and see how the gradient values and the resulting weight change differ:
-- Indices near the image's edges/corners (e.g. `0`, `27`, `755`) tend to give gradients of exactly
-  `0`, since MNIST digits rarely or never touch those pixels
-- Indices nearer the centre (e.g. `350`-`450`) tend to give the largest, most varied gradients,
-  since that's where digit strokes usually pass through
-
-### Compare this notebook side-by-side with the TensorFlow version
-
-Open both notebooks in separate tabs and step through them in parallel, section by section. A few
-concrete things worth comparing directly:
-- Run `model.summary()` (TensorFlow, Step 5) next to `print(model)` plus the parameter count
-  (PyTorch, Step 5) — both report 101,770 parameters for the identical architecture, just formatted
-  very differently
-- Compare Step 6 in each: one `model.compile(...)` call vs. two separate `criterion`/`optimizer`
-  objects, configuring the same underlying ideas
-- Draw the *same* digit on both notebooks' canvases (Step 11 in each) and compare the predicted
-  digit and confidence percentage each model gives it
-- Read the "How this compares to Keras, at a glance" table in this notebook's Summary section for
-  a full concept-by-concept mapping between the two
+Each of these has a detailed, step-by-step walkthrough with full explanations and runnable code
+in [`ideas_to_extend/`](ideas_to_extend/README.md).
