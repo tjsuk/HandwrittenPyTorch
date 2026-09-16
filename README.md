@@ -13,6 +13,20 @@ reading for each other, but the notebook does call out how PyTorch's approach di
 Keras' as those differences come up, and finishes with a side-by-side comparison table — so if
 you're comparing the two frameworks, they're a good pair to read together.
 
+**Part of a series** on machine learning fundamentals, each solving a related problem at a
+different level of the stack:
+
+1. **[NumPy_Fundamentals](https://github.com/tjsuk/ExplainingNumPy)** — build a neural network
+   from scratch using nothing but NumPy
+2. **[Scikit_Learn_Guide](https://github.com/tjsuk/Scikit_Learn_Guide)** — a handwritten-digit
+   classifier built with scikit-learn's toolkit
+3. **[HandwrittenTensorflow](https://github.com/tjsuk/HandwrittenTensorflow)** — the same
+   digit-recognition project built with TensorFlow/Keras
+4. **HandwrittenPyTorch** (this notebook) — a full digit-recognition project built with PyTorch
+
+They're independent and don't require reading in order, but each links back to the others where
+the connection is most relevant.
+
 ## What's inside
 
 1. **Import libraries** — torch, torchvision, matplotlib, numpy
