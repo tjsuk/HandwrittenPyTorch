@@ -1,5 +1,7 @@
 # Handwritten Digit Recognition with PyTorch
 
+[![License: Personal Use](https://img.shields.io/badge/License-Personal%20Use-red.svg)](LICENSE)
+
 A beginner-friendly Jupyter notebook that trains a neural network to recognise handwritten
 digits (0-9) using the [MNIST dataset](https://systemds.apache.org/datasets/mnist) and
 [PyTorch](https://pytorch.org/). It's written as a self-contained **learning exercise**, not
@@ -180,8 +182,14 @@ in [`ideas_to_extend/`](ideas_to_extend/README.md).
 
 ## License
 
-The code in this repository (notebook code cells, scripts and `requirements.txt`) is released under the [MIT License](LICENSE).
+Copyright © 2026 Trevor Smith. All rights reserved. Released under a [Personal Use License](LICENSE).
 
-The written content (explanations, exercises, Markdown files and study guide documents) is licensed under [CC BY-NC 4.0](LICENSE-CONTENT.md): you may share and adapt it for non-commercial use with credit, but not sell it or use it in paid courses or products.
+In plain terms:
 
-Copyright © 2026 Trevor Smith.
+- ✅ You **can** download it from this repository and use it for free, for personal use, study or at work (including teaching).
+- ✅ You **can** change it for your own private use.
+- ❌ You **can't** share, copy, upload or distribute it, modified or not. To tell someone about it, send them a link to this repository.
+- ❌ You **can't** sell it, or charge for a product or service based on it.
+- ❌ You **can't** remove the copyright notice or present it as your own work.
+
+The full [LICENSE](LICENSE) text is the legally binding version; this summary is just a guide. This is proprietary material, not open source. It replaces the earlier MIT and CC BY-NC 4.0 licences.
